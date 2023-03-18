@@ -1,23 +1,68 @@
-# Aerostack2
+# as2_python_api
 
-Aerostack2 is a ROS2 framework developed to create autonomous multi-aerial-robots systems in an easy and powerful way.
+AeroStack2 python interface.
 
-Currently is developed and tested over ROS2 humble (over Ubuntu 22.04) and galactic (over Ubuntu 20.04).
+## Index
+- [API](#api)
+- [ENUMERATIONS](#enumerations)
+    - [STATE](#state)
+    - [YAW_MODE](#yawmode)
+    - [CONTROL_MODE](#controlmode)
+    - [REFERENCE_FRAME](#referenceframe)
 
-![Build for Ubuntu 22.04 and ROS humble](https://github.com/aerostack2/aerostack2/actions/workflows/build-humble.yaml/badge.svg)
-![Build for Ubuntu 20.04 and ROS galactic](https://github.com/aerostack2/aerostack2/actions/workflows/build-galactic.yaml/badge.svg)
+----
+## API
 
-[![Build Status ROS2 Package](https://build.ros2.org/job/Hdev__aerostack2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Hdev__aerostack2__ubuntu_jammy_amd64/)
+| Method | Input | Output | Description |
+| --- | --- | --- | --- |
+| `str = get_drone_id()` | - | drone namespace | - |
+| `{ bool, bool, bool, STATE, YAW_MODE, CONTROL_MODE, REFERENCE_FRAME } = get_info()` | - | drone info {connected, armed, offboard, state, yaw_mode, control_mode, reference_frame} | - |
+| `[ float, float, float ] = get_position()` | - | [ x, y, z ] | - |
+| `[ float, float, float ] = get orientation()` | - | [ roll, pitch, yaw ] | - |
+| `[ float, float, float ] = get_gps_pose()` | - | [ lat, lon ,alt ] |
+| `takeoff(float, float)` | heigth, speed | - | - |
+| `follow_path([ [ float, float, float ], ... ], float)` | [ [ x, y, z ], ... ], speed | - | - |
+| `follow_gps_path([ [ float, float, float ], ... ], float)` | [ [ lat, lon, alt ], ... ], speed | - | - |
+| `land()` | - | - | - |
+<!-- | `go_to()` | - | - | -->
 
+----
+## ENUMERATIONS
 
-Most important features:
-- Natively developed on ROS2
-- Complete modularity, allowing elements to be changed or interchanged without affecting the rest of the system
-- Independence of the aerial platform. Easy Sim2Real deployment.
-- Project-oriented, allowing to install and use only the necessary packages for the application to be developed. 
-- Swarming orientation.
+### STATE
 
-Please visit the [[Aerostack2 Documentation]](https://aerostack2.github.io) for a complete documentation.
+| Value | Field Name | Description |
+| --- | --- | --- |
+| `EMERGENCY` | -1 | - |
+| `DISARMED` | 0 | - |
+| `LANDED` | 1 | - |
+| `TAKING_OFF` | 2 | - |
+| `FLYING` | 3 | - |
+| `LANDING` | 4 | - |
 
-Installation instructions can be found [[here]](https://aerostack2.github.io/_00_getting_started/index.html#ubuntu-debian).
+### YAW_MODE
 
+| Value | Field Name | Description |
+| --- | --- | --- |
+| `YAW_ANGLE` | 0 | - |
+| `YAW_SPEED` | 1 | - |
+
+### CONTROL_MODE
+
+| Value | Field Name | Description |
+| --- | --- | --- |
+| `UNSET` | -1 | mode when the vehicle is not set |
+| `POSITION_MODE` | 0 | x, y, z refs |
+| `SPEED_MODE` | 1 | vx, vy, vz refs |
+| `SPEED_IN_A_PLANE` | 2 | vx, vy, z refs |
+| `ACCEL_MODE` | 3 | ax, ay, az refs |
+| `ATTITUDE_MODE` | 4 | quaternions + Thrust  |
+| `ACRO_MODE` | 5 | p, q, r speed + Thrust  |
+
+### REFERENCE_FRAME
+
+| Value | Field Name | Description |
+| --- | --- | --- |
+| `LOCAL_ENU_FRAME` | 0 | Local coordinates |
+| `BODY_FLU_FRAME` | 1 | Body coordinates |
+| `GLOBAL_ENU_FRAME` | 2 | GPS coordinates |
