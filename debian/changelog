@@ -1,0 +1,31 @@
+ros-humble-as2-behaviors-trajectory-generation (1.0.0-1jammy) jammy; urgency=high
+
+  * Merge pull request #183 <https://github.com/aerostack2/aerostack2/issues/183> from aerostack2/153-as2_behaviors-extra-foreach-in-cmake
+    [bug] extra foreach removed
+  * [bug] extra foreach removed
+  * Merge pull request #163 <https://github.com/aerostack2/aerostack2/issues/163> from aerostack2/crazyflie_swarm_demo
+    Crazyflie swarm demo updates
+  * Merge pull request #160 <https://github.com/aerostack2/aerostack2/issues/160> from aerostack2/trajectory_generation
+    Change trajectory generator name
+  * Demo cf swarm updates
+  * Change trajectory generator name
+  * Revert "Change trayectory generator"
+    This reverts commit fe17ea3f0a5ef1eb377e0779359bd75dc8c3212d.
+  * Change trayectory generator
+  * Contributors: Miguel, RPS98, Rafael Pérez, pariaspe
+
+ -- Computer Vision And Aerial Robotics Group (UPM) <cvar.upm3@gmail.com>  Fri, 17 Mar 2023 23:00:00 -0000
+
+ros-humble-as2-behaviors-trajectory-generation (0.2.2-1jammy) jammy; urgency=high
+
+
+
+ -- Computer Vision And Aerial Robotics Group (UPM) <cvar.upm3@gmail.com>  Wed, 21 Dec 2022 23:00:00 -0000
+
+ros-humble-as2-behaviors-trajectory-generation (0.2.1-1jammy) jammy; urgency=high
+
+
+
+ -- Computer Vision And Aerial Robotics Group (UPM) <cvar.upm3@gmail.com>  Sun, 18 Dec 2022 23:00:00 -0000
+
+
