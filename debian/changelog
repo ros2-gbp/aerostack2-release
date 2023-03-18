@@ -1,0 +1,29 @@
+ros-humble-as2-core (1.0.0-1bullseye) bullseye; urgency=high
+
+
+
+ -- Computer Vision And Aerial Robotics Group (UPM) <cvar.upm3@gmail.com>  Fri, 17 Mar 2023 23:00:00 -0000
+
+ros-humble-as2-core (0.2.2-1bullseye) bullseye; urgency=high
+
+
+
+ -- Computer Vision And Aerial Robotics Group (UPM) <cvar.upm3@gmail.com>  Mon, 19 Dec 2022 23:00:00 -0000
+
+ros-humble-as2-core (0.2.1-1bullseye) bullseye; urgency=high
+
+  * Merge pull request #30 <https://github.com/aerostack2/aerostack2/issues/30> from aerostack2/add_test_to_ci
+    test added to ci
+  * new gtest in as2_core
+  * Merge pull request #18 <https://github.com/aerostack2/aerostack2/issues/18> from aerostack2/fix_tests
+    Fix tests
+  * as2 core formatted
+  * trajectory generator added to as2_core
+  * as2_core update
+  * reformat as2_core
+  * First commit
+  * Contributors: David Perez-Saura, Miguel, Rafael Pérez, miferco97
+
+ -- Computer Vision And Aerial Robotics Group (UPM) <cvar.upm3@gmail.com>  Sun, 18 Dec 2022 23:00:00 -0000
+
+
