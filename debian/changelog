@@ -1,0 +1,24 @@
+ros-humble-as2-motion-controller (1.0.0-1jammy) jammy; urgency=high
+
+  * Merge branch 'main' into aruco_detect
+  * Merge branch 'main' into state_estimator_plugins
+  * Merge pull request #158 <https://github.com/aerostack2/aerostack2/issues/158> from aerostack2/motion_controller
+    [as2_controller] Change as2_controller to as2_motion_controller
+  * Change as2_controller to as2_motion_controller
+  * Contributors: Miguel Fernandez-Cortizas, RPS98
+
+ -- Miguel Fernandez-Cortizas <miguel.fernandez.cortizas@upm.es>  Fri, 17 Mar 2023 23:00:00 -0000
+
+ros-humble-as2-motion-controller (0.2.2-1jammy) jammy; urgency=high
+
+
+
+ -- Miguel Fernandez-Cortizas <miguel.fernandez.cortizas@upm.es>  Wed, 21 Dec 2022 23:00:00 -0000
+
+ros-humble-as2-motion-controller (0.2.1-1jammy) jammy; urgency=high
+
+
+
+ -- Miguel Fernandez-Cortizas <miguel.fernandez.cortizas@upm.es>  Sun, 18 Dec 2022 23:00:00 -0000
+
+
