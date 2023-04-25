@@ -1,23 +1,30 @@
-# Aerostack2
+# AS2_behavior library
 
-Aerostack2 is a ROS2 framework developed to create autonomous multi-aerial-robots systems in an easy and powerful way.
+Aerostack2 uses Behaviors to handle mission execution
 
-Currently is developed and tested over ROS2 humble (over Ubuntu 22.04) and galactic (over Ubuntu 20.04).
+Each behavior is separated in a behavior Server and a behavior client.
+They are similar to rclcpp actions but with some differences. 
+- Each behavior server only attends to a single goal (client) at each moment.
+- Feedback is visible for all nodes 
+- They extend start, stop, and feedback with modify, pause, resume, and behavior state data.
 
-![Build for Ubuntu 22.04 and ROS humble](https://github.com/aerostack2/aerostack2/actions/workflows/build-humble.yaml/badge.svg)
-![Build for Ubuntu 20.04 and ROS galactic](https://github.com/aerostack2/aerostack2/actions/workflows/build-galactic.yaml/badge.svg)
+We use ros2 services for:
+- start
+- modify (the same syntax than start)
+- pause (std_srvs::srv::Empty)
+- resume (std_srvs::srv::Empty)
+- stop (std_srvs::srv::Empty)
 
-[![Build Status ROS2 Package](https://build.ros2.org/job/Hdev__aerostack2__ubuntu_jammy_amd64/badge/icon)](https://build.ros2.org/job/Hdev__aerostack2__ubuntu_jammy_amd64/)
+We use ros2 topics for:
+- Feedback
+- State
 
+We take advantage of ros2 action message definitions:
+- Goal: will be used in start and modify services
+- Feedback: Will be used in feedback
+- Response: (Maybe in state, or in inmediate behaviors)
 
-Most important features:
-- Natively developed on ROS2
-- Complete modularity, allowing elements to be changed or interchanged without affecting the rest of the system
-- Independence of the aerial platform. Easy Sim2Real deployment.
-- Project-oriented, allowing to install and use only the necessary packages for the application to be developed. 
-- Swarming orientation.
-
-Please visit the [[Aerostack2 Documentation]](https://aerostack2.github.io) for a complete documentation.
-
-Installation instructions can be found [[here]](https://aerostack2.github.io/_00_getting_started/index.html#ubuntu-debian).
-
+We difference between Inmediate, Recurrent and Regular (or goal oriented) behaviors:
+- Inmediate: act like a service, they dont give Fb and cannot be paused or modified.
+- Recurrent: they give feedback until they are stopped or paused.
+- Goal Oriented: they keep runing until a termination condition is met.
