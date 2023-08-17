@@ -1,5 +1,5 @@
 /********************************************************************************************
- *  \file       differential_flatness.hpp
+ *  \file       differential_flatness_controller.hpp
  *  \brief      Declares the controller plugin differential flatness
  *  \authors    Rafael Pérez Seguí
  *              Miguel Fernández Cortizas
@@ -52,7 +52,7 @@
 #include <Eigen/src/Core/GlobalFunctions.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-namespace differential_flatness {
+namespace differential_flatness_controller {
 struct UAV_state {
   Eigen::Vector3d position       = Eigen::Vector3d::Zero();
   Eigen::Vector3d velocity       = Eigen::Vector3d::Zero();
@@ -140,15 +140,12 @@ public:
                      geometry_msgs::msg::TwistStamped& twist,
                      as2_msgs::msg::Thrust& thrust) override;
 
-  bool updateParams(const std::vector<std::string>& _params_list) override;
+  bool updateParams(const std::vector<rclcpp::Parameter>& _params_list) override;
   void reset() override;
 
   // IMPORTANT: this is the frame_id of the desired pose and twist
   std::string getDesiredPoseFrameId() override { return odom_frame_id_; }
   std::string getDesiredTwistFrameId() override { return odom_frame_id_; }
-
-  rcl_interfaces::msg::SetParametersResult parametersCallback(
-      const std::vector<rclcpp::Parameter>& parameters);
 
 private:
   /** Controller especific functions */
@@ -182,6 +179,6 @@ private:
                                         const Eigen::Vector3d& _acc_reference,
                                         const double& _yaw_angle_reference);
 };
-};  // namespace differential_flatness
+};  // namespace differential_flatness_controller
 
 #endif
