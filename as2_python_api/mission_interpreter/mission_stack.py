@@ -1,5 +1,5 @@
 """
-test_module.py
+mission_stack.py
 """
 
 # Copyright 2022 Universidad Politécnica de Madrid
@@ -36,40 +36,62 @@ __copyright__ = "Copyright (c) 2022 Universidad Politécnica de Madrid"
 __license__ = "BSD-3-Clause"
 __version__ = "0.1.0"
 
-import typing
-import time
+from collections import deque
+from typing import Deque, Tuple
 
-from as2_python_api.modules.module_base import ModuleBase
+# TODO: improve mission_stack
+# Class MissionStack:
+#       attributtes: current, done_deque, todo_deque
+#       methods: append, insert, repeat_last
 
-if typing.TYPE_CHECKING:
-    from ..drone_interface import DroneInterface
 
+class MissionStack:
+    """Mission stack"""
 
-class TestModule(ModuleBase):
-    """Test Module
-    """
-    __alias__ = "test"
+    def __init__(self, mission_stack: list = None) -> None:
+        mission_stack = [] if mission_stack is None else mission_stack
 
-    def __init__(self, drone: 'DroneInterface') -> None:
-        super().__init__(drone, self.__alias__)
-        self.stopped = False
+        # TODO, think if use Deque[MissionItem]
+        # Tuples represent MissionItem (behavior, args)
+        self.__pending: Deque[Tuple[str, str]] = deque(mission_stack)  # FIFO
+        self.__done: Deque[Tuple[str, str]] = deque()  # LIFO
+        self.__current: Tuple[str, str] = None
 
-    def __call__(self, arg1: float, arg2: int, wait: bool = True) -> None:
-        """Test call
-        """
-        if isinstance(wait, str):
-            wait = wait.lower() == 'true'
-        self.stopped = not wait
-        print(f"{self.__alias__} called with {arg1=}, {arg2=} and {wait=}")
-        while not self.stopped:
-            print(f"{self.__alias__} called with {arg1=}, {arg2=} and {wait=}")
-            time.sleep(0.5)
+    def __str__(self) -> str:
+        current = "None" if self.current is None else self.current
+        return current + str(self.pending)
 
-    def stop(self):
-        """stop test module"""
-        self.stopped = True
+    def next(self):
+        if self.__current is not None:
+            self.__done.append(self.__current)
 
-    def destroy(self):
-        """TestModule does not inherit from a behavior with a destroy method, so self defining it
-        Does nothing...
-        """
+        if len(self.pending) > 0:
+            self.__current = self.__pending.popleft()
+        else:
+            self.__current = None
+        return self.__current
+
+    def previous(self):
+        raise NotImplementedError
+
+    def add(self, item):
+        self.__pending.append(item)
+
+    @property
+    def last_done(self):
+        return self.__done[0]
+
+    @property
+    def pending(self) -> list:
+        return list(self.__pending)
+
+    @property
+    def done(self) -> list:
+        return list(self.__done)
+
+    @property
+    def current(self):
+        # TEMP: use MissionItem instead Tuple
+        if self.__current is None:
+            return None
+        return self.__current[0]
