@@ -199,7 +199,7 @@ class BehaviorHandler(abc.ABC):
         :return: stop succeed or not
         :rtype: bool
         """
-        if self.status != BehaviorStatus.RUNNING:
+        if self.status == BehaviorStatus.IDLE:
             return True
         response = self.__stop_client.call(Trigger.Request())
         return response.success
@@ -207,7 +207,7 @@ class BehaviorHandler(abc.ABC):
     def wait_to_result(self) -> bool:
         """Wait to inner action to finish
 
-        :raises GoalFailed: When behaviour result not succeeded
+        :raises GoalFailed: When behavior result not succeeded
         :return: succeeded or not
         :rtype: bool
         """
