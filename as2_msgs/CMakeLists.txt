@@ -18,6 +18,7 @@ set(PROJECT_DEPENDENCIES
   geographic_msgs
   builtin_interfaces
   nav_msgs
+  action_msgs
 )
 
 foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
@@ -37,6 +38,7 @@ set(MSGS_FILES
   "msg/Thrust.msg"
   "msg/TrajectoryPoint.msg"
   "msg/MissionEvent.msg"
+  "msg/MissionUpdate.msg"
   "msg/NodeStatus.msg"
   "msg/TrajGenInfo.msg"
   "msg/Geofence.msg"
