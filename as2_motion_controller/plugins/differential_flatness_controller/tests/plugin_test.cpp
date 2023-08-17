@@ -32,8 +32,8 @@ public:
             "as2_motion_controller_plugin_base::ControllerBase");
     try {
       std::filesystem::path plugin_name_ =
-          "/home/rafa/aerostack2_ws/install/differential_flatness/lib/"
-          "libdifferential_flatness.so";
+          "/home/rafa/aerostack2_ws/install/differential_flatness_controller/lib/"
+          "libdifferential_flatness_controller.so";
       controller_ = loader_->createSharedInstance(plugin_name_);
       controller_->initialize(this);
       controller_->updateParams(this->list_parameters({}, 0).names);
@@ -60,7 +60,7 @@ public:
         as2_names::topics::self_localization::twist, as2_names::topics::self_localization::qos,
         std::bind(&Plugin_test::state_callback, this, std::placeholders::_1));
 
-    timer_ = this->create_wall_timer(10ms, std::bind(&Plugin_test::timer_callback, this));
+    timer_ = this->create_timer(10ms, std::bind(&Plugin_test::timer_callback, this));
   }
 
 private:
