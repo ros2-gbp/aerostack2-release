@@ -2,8 +2,61 @@
 Changelog for package as2_ign_gazebo_assets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2023-08-17)
+------------------
+* Merge pull request `#314 <https://github.com/aerostack2/aerostack2/issues/314>`_ from aerostack2/313-payload-bridges-missing
+  Payload bridges fix
+* fixes issue 313: payload bridges
+* Merge pull request `#306 <https://github.com/aerostack2/aerostack2/issues/306>`_ from aerostack2/as2_viz
+  Added drone_viz sdf
+* added drone_viz sdf
+* Merge pull request `#305 <https://github.com/aerostack2/aerostack2/issues/305>`_ from aerostack2/300-add_sim_time_to_gps_bridge
+  use_sim_time now works in gps bridge
+* use sim time now works in gps bridge
+* added grass world
+* Merge pull request `#295 <https://github.com/aerostack2/aerostack2/issues/295>`_ from aerostack2/290-add_gps_origin_from_json_file
+  add gps origin from json file
+* now assets can be loaded from other directory
+* jinja always used, if it doesn't exist, sdf is used
+* add gps origin from json file
+* Merge pull request `#286 <https://github.com/aerostack2/aerostack2/issues/286>`_ from aerostack2/285-fix_python_list_type
+  Changed typing list to List
+* changed list to List
+* Merge pull request `#278 <https://github.com/aerostack2/aerostack2/issues/278>`_ from aerostack2/229-as2_simulation_assets-earth-needs-to-be-alligned-in-enu-frame
+  Change 0 deg reference from North to East
+* Change 0 deg reference from North to East
+* Merge pull request `#266 <https://github.com/aerostack2/aerostack2/issues/266>`_ from aerostack2/add_position_plugin_to_gates
+  added position plugin to gates
+* added position plugin to gates
+* Clean gazebo on exit
+* Merge pull request `#232 <https://github.com/aerostack2/aerostack2/issues/232>`_ from aerostack2/launch_gz_v2
+  Gazebo launcher engine refactored
+* Change assets simulation_config_file name
+* default empty value for joints and bridges
+* added pydantic dep
+* models splitted in several files
+* updated to new model
+* model refactor
+* Contributors: Javilinos, Miguel Fernandez-Cortizas, RPS98, Rafael Pérez, pariaspe, rdasilva01
+
+1.0.1 (2023-04-25)
+------------------
+* Merge pull request `#223 <https://github.com/aerostack2/aerostack2/issues/223>`_ from aerostack2/200-unify-maintainer-in-packagexmls
+  Maintainer unified to CVAR-UPM
+* Maintainer unified to CVAR-UPM
+* Merge pull request `#222 <https://github.com/aerostack2/aerostack2/issues/222>`_ from aerostack2/221-gazebo-gui-config-file
+  [as2_ign_gazebo_assets] Added GUI config file
+* gui config file and some documenting
+* Merge pull request `#209 <https://github.com/aerostack2/aerostack2/issues/209>`_ from aerostack2/208-as2_simulation_assets-use-sim-time-default-parameter
+  [ as2_simulation_assets] Use sim time default parameter
+* Change use_sim_time default value
+* Merge pull request `#203 <https://github.com/aerostack2/aerostack2/issues/203>`_ from aerostack2/simulation_assets_for_windmill_test
+  [as2_ign_gazebo_assets] added use_sim_time parameter
+* added use_sim_time parameter to ign_assets
+* Merge pull request `#202 <https://github.com/aerostack2/aerostack2/issues/202>`_ from aerostack2/new-windmill
+  [as2_ign_gazebo_assets] Added debug model for visualize in rviz
+* added debug model for visualize in rviz
+* Contributors: Javier Melero, Javilinos, Miguel Fernandez-Cortizas, RPS98, Rafael Pérez, pariaspe
 
 1.0.0 (2023-03-18)
 ------------------
