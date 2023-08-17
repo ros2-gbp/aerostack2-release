@@ -2,6 +2,29 @@
 Changelog for package as2_platform_crazyflie
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2023-08-17)
+------------------
+* Merge pull request `#239 <https://github.com/aerostack2/aerostack2/issues/239>`_ from aerostack2/cf-namespace
+  [as2_crazyflie_platform] Remove namespace from launch
+* Fix aideck config file in launcher
+* Remove namespace from launch
+  Namespace was overriding each crazyflie namespace which is intended to be set by swarm_config_file
+* Merge pull request `#237 <https://github.com/aerostack2/aerostack2/issues/237>`_ from aerostack2/unify_platform_launchers
+  Unify launchers
+* Fix crazyflie params file read
+* Unify platform launchers
+* Contributors: Javilinos, Miguel Fernandez-Cortizas, RPS98, Rafael Pérez, pariaspe
+
+1.0.1 (2023-04-25)
+------------------
+* Merge pull request `#223 <https://github.com/aerostack2/aerostack2/issues/223>`_ from aerostack2/200-unify-maintainer-in-packagexmls
+  Maintainer unified to CVAR-UPM
+* Maintainer unified to CVAR-UPM
+* Merge pull request `#212 <https://github.com/aerostack2/aerostack2/issues/212>`_ from aerostack2/211-nodes-should-use-aerostack2-node-create-timer-method-not-create-wall-timer
+  Nodes use Aerostack2 Node Create Timer method, not create wall timer
+* Change create wall timer to as2 create timer
+* Contributors: Miguel Fernandez-Cortizas, RPS98, pariaspe
+
 1.0.0 (2023-03-18)
 ------------------
 
