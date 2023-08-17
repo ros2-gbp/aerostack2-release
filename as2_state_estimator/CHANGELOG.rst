@@ -2,6 +2,25 @@
 Changelog for package as2_state_estimator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2023-08-17)
+------------------
+* Merge pull request `#279 <https://github.com/aerostack2/aerostack2/issues/279>`_ from aerostack2/230-gps_support_for_ground_truth_plugin
+  Add gps support for ground truth plugin
+* Change origin param
+* parameters added, compiling, add origin manually working
+* gps support for ground truth plugin
+* Contributors: Javilinos, Miguel Fernandez-Cortizas, RPS98, pariaspe
+
+1.0.1 (2023-04-25)
+------------------
+* Merge pull request `#223 <https://github.com/aerostack2/aerostack2/issues/223>`_ from aerostack2/200-unify-maintainer-in-packagexmls
+  Maintainer unified to CVAR-UPM
+* Maintainer unified to CVAR-UPM
+* Merge pull request `#212 <https://github.com/aerostack2/aerostack2/issues/212>`_ from aerostack2/211-nodes-should-use-aerostack2-node-create-timer-method-not-create-wall-timer
+  Nodes use Aerostack2 Node Create Timer method, not create wall timer
+* Change create wall timer to as2 create timer
+* Contributors: Miguel Fernandez-Cortizas, RPS98, pariaspe
+
 1.0.0 (2023-03-18)
 ------------------
 * Merge branch 'main' into trajectory_generation
