@@ -105,8 +105,9 @@ class DJISubscription {
     };
 
     update_timer_ =
-        node_->create_wall_timer(std::chrono::milliseconds(1000 / frequency_),
-                                 std::bind(&DJISubscription::update, this));
+        node_->create_timer(std::chrono::duration<double>(1.0f / frequency_),
+                            std::bind(&DJISubscription::update, this));
+
     started_ = true;
     return true;
   };
@@ -364,9 +365,10 @@ class DJISubscriptionOdometry : public DJISubscription {
 
     if (!is_gps_initialized_) {
       if (gps.visibleSatelliteNumber < 4) {
-        RCLCPP_INFO(node_->get_logger(), "DJI GPS not initialized");
+        RCLCPP_WARN_ONCE(node_->get_logger(), "DJI GPS not initialized");
         return;
       }
+      RCLCPP_WARN_ONCE(node_->get_logger(), "DJI GPS initialized");
       gps_handler_.setOrigin(gps.latitude * 180.0 / M_PI,
                              gps.longitude * 180.0 / M_PI, gps.altitude);
       is_gps_initialized_ = true;
