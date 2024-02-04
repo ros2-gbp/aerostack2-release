@@ -2,6 +2,9 @@
 Changelog for package as2_platform_crazyflie
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.7 (2024-02-04)
+------------------
+
 1.0.6 (2023-12-12)
 ------------------
 * Fix wrong sensor name for multiranger deck

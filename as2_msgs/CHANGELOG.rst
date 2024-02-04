@@ -2,6 +2,11 @@
 Changelog for package as2_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.7 (2024-02-04)
+------------------
+* Gimbal model added
+* Contributors: Javilinos, pariaspe
+
 1.0.6 (2023-12-12)
 ------------------
 * Takeoff and GoTo behavior renaming
