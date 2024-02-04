@@ -2,6 +2,9 @@
 Changelog for package as2_motion_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.7 (2024-02-04)
+------------------
+
 1.0.6 (2023-12-12)
 ------------------
 * Update PID controller dependence to v1.0
