@@ -2,6 +2,9 @@
 Changelog for package as2_behaviors_motion
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.8 (2024-02-12)
+------------------
+
 1.0.7 (2024-02-04)
 ------------------
 * [refactor] format tests according with ament_lint_common() packages
