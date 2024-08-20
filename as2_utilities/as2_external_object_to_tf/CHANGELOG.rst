@@ -2,6 +2,9 @@
 Changelog for package as2_external_object_to_tf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.1 (2024-08-20)
+------------------
+
 1.1.0 (2024-08-08)
 ------------------
 * [as2_external_object_to_tf] quick fix flake8
