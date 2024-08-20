@@ -2,6 +2,9 @@
 Changelog for package as2_gazebo_assets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.1 (2024-08-20)
+------------------
+
 1.1.0 (2024-08-08)
 ------------------
 * [as2_gazebo_assets] Improve crazyflie model: controller tuned and added IMU
