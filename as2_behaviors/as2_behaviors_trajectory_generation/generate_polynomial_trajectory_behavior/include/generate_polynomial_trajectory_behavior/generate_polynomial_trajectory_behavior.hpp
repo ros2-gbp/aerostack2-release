@@ -27,15 +27,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 /**
-* @file generate_polynomial_trajectory_behavior.hpp
-*
-* @brief Class definition for the GeneratePolynomialTrajectoryBehavior class.
-*
-* @author Miguel Fernández Cortizas
-*         Pedro Arias Pérez
-*         David Pérez Saura
-*         Rafael Pérez Seguí
-*/
+ * @file generate_polynomial_trajectory_behavior.hpp
+ *
+ * @brief Class definition for the GeneratePolynomialTrajectoryBehavior class.
+ *
+ * @author Miguel Fernández Cortizas
+ *         Pedro Arias Pérez
+ *         David Pérez Saura
+ *         Rafael Pérez Seguí
+ */
 
 #ifndef GENERATE_POLYNOMIAL_TRAJECTORY_BEHAVIOR__GENERATE_POLYNOMIAL_TRAJECTORY_BEHAVIOR_HPP_
 #define GENERATE_POLYNOMIAL_TRAJECTORY_BEHAVIOR__GENERATE_POLYNOMIAL_TRAJECTORY_BEHAVIOR_HPP_
@@ -64,7 +64,7 @@
 #include "dynamic_trajectory_generator/dynamic_trajectory.hpp"
 #include "dynamic_trajectory_generator/dynamic_waypoint.hpp"
 
-#include "as2_msgs/msg/pose_stamped_with_id.hpp"
+#include "as2_msgs/msg/pose_stamped_with_id_array.hpp"
 #include "as2_msgs/msg/pose_with_id.hpp"
 #include "as2_msgs/msg/traj_gen_info.hpp"
 
@@ -75,9 +75,7 @@
 #include <nav_msgs/msg/path.hpp>
 #include <std_msgs/msg/float32.hpp>
 #include <visualization_msgs/msg/marker.hpp>
-
-#define PATH_DEBUG_TOPIC "debug/traj_generated"
-#define REF_TRAJ_TOPIC "debug/ref_traj_point"
+#include <visualization_msgs/msg/marker_array.hpp>
 
 class DynamicPolynomialTrajectoryGenerator
   : public as2_behavior::BehaviorServer<
@@ -94,8 +92,12 @@ private:
   rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr yaw_sub_;
 
   // For faster waypoint modified
-  rclcpp::Subscription<as2_msgs::msg::PoseStampedWithID>::SharedPtr
+  rclcpp::Subscription<as2_msgs::msg::PoseStampedWithIDArray>::SharedPtr
     mod_waypoint_sub_;
+
+  /** Timer**/
+  rclcpp::TimerBase::SharedPtr timer_update_frame_;
+  double frequency_update_frame_ = 0.0;
 
   /** Dynamic trajectory generator library */
   // dynamic_traj_generator::DynamicTrajectory trajectory_generator_;
@@ -111,6 +113,14 @@ private:
   // Parameters
   std::string base_link_frame_id_;
   std::string desired_frame_id_;
+  std::string map_frame_id_;
+  int sampling_n_ = 1;
+  double sampling_dt_ = 0.0;
+  int path_lenght_ = 0;
+  float yaw_threshold_ = 0;
+  float transform_threshold_ = 1.0;
+  double yaw_speed_threshold_ = 2.0;
+  double wp_close_threshold_ = 0.0;
 
   // Behavior action parameters
   as2_msgs::msg::YawMode yaw_mode_;
@@ -127,19 +137,25 @@ private:
 
   // State
   Eigen::Vector3d current_position_;
+  geometry_msgs::msg::TransformStamped current_map_to_odom_transform_;
+  geometry_msgs::msg::TransformStamped last_map_to_odom_transform_;
   double current_yaw_;
 
   // Command
-  double yaw_angle_ = 0.0;
-  dynamic_traj_generator::References traj_command_;
+  as2_msgs::msg::TrajectorySetpoints trajectory_command_;
 
   // Trajectory generator
+  rclcpp::Duration eval_time_ = rclcpp::Duration(0, 0);
+  rclcpp::Duration eval_time_yaw_ = rclcpp::Duration(0, 0);
   rclcpp::Time time_zero_;
+  rclcpp::Time time_zero_yaw_;
   bool first_run_ = false;
   bool has_odom_ = false;
+  dynamic_traj_generator::DynamicWaypoint::Deque waypoints_to_set_;
+  std::optional<rclcpp::Time> time_debug_;
 
   // Debug
-  bool enable_debug_ = true;
+  bool enable_debug_ = false;
   std::thread plot_thread_;
 
 private:
@@ -170,13 +186,19 @@ private:
 
   void on_execution_end(const as2_behavior::ExecutionStatus & state) override;
 
+private:
+  /**
+  * @brief Callback to check the errors between frames and update the frame offset
+  */
+  void timerUpdateFrameCallback();
+
   /** Topic Callbacks **/
   void stateCallback(const geometry_msgs::msg::TwistStamped::SharedPtr msg);
   void yawCallback(const std_msgs::msg::Float32::SharedPtr _msg);
 
   // For faster waypoint modified
   void modifyWaypointCallback(
-    const as2_msgs::msg::PoseStampedWithID::SharedPtr _msg);
+    const as2_msgs::msg::PoseStampedWithIDArray::SharedPtr _msg);
 
   /** Trajectory generator functions */
   void setup();
@@ -184,16 +206,43 @@ private:
     std::shared_ptr<
       const as2_msgs::action::GeneratePolynomialTrajectory::Goal>
     goal,
-    dynamic_traj_generator::DynamicWaypoint::Vector & waypoints);
-  bool evaluateTrajectory(double _eval_time);
-  double computeYawAnglePathFacing();
+    dynamic_traj_generator::DynamicWaypoint::Deque & waypoints);
+  bool evaluateTrajectory(double eval_time);
+  bool evaluateSetpoint(
+    double eval_time,
+    as2_msgs::msg::TrajectoryPoint & trajectory_command,
+    bool current_setpoint = true);
 
-private:
+  /**
+   * @brief update the trajectory waypoint and waypoint_to_set_queue with the frame offset
+   * @param goal the goal of the action
+   * @return bool Return false if the transform between the map and the desired frame is not available and true otherwise
+   */
+  bool updateFrame(
+    const as2_msgs::action::GeneratePolynomialTrajectory::Goal &
+    goal);
+
+  double computeYawAnglePathFacing(double vx, double vy);
+
+  /**
+  * @brief Compute the Yaw angle to face the next reference point
+  * @return double Current yaw angle if the distance to the next reference point is less than the yaw_threshold_ or the angle to face the next reference point otherwise
+  */
+  double computeYawFaceReference();
+
+  /**
+* @brief Compute the error frames between the map and the desired frame
+* @return bool Return true if the frame offset is bigger than the transform_threshold_ and false otherwise
+*/
+  bool computeErrorFrames();
+
   /** For debuging **/
 
   /** Debug publishers **/
-  rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
-  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr ref_point_pub;
+  rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr debug_path_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr debug_waypoints_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr debug_ref_point_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr debug_end_ref_point_pub_;
 
   /** Debug functions **/
   void plotTrajectory();
@@ -204,7 +253,7 @@ private:
 /** Auxiliar Functions **/
 
 void generateDynamicPoint(
-  const as2_msgs::msg::PoseWithID & msg,
+  const as2_msgs::msg::PoseStampedWithID & msg,
   dynamic_traj_generator::DynamicWaypoint & dynamic_point);
 
 #endif  // GENERATE_POLYNOMIAL_TRAJECTORY_BEHAVIOR__GENERATE_POLYNOMIAL_TRAJECTORY_BEHAVIOR_HPP_
