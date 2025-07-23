@@ -27,25 +27,15 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 /**
-* @file as2_state_estimator_node.cpp
+* @file ground_truth_odometry_fuse.cpp
 *
-* Node for the state estimation server for AeroStack2
+* An state estimation plugin ground truth and external odom fusion for AeroStack2
 *
-* @authors David Pérez Saura
-*          Rafael Pérez Seguí
-*          Javier Melero Deza
-*          Miguel Fernández Cortizas
-*          Pedro Arias Pérez
+* @authors Rafael Pérez Seguí
 */
 
-#include "as2_core/core_functions.hpp"
-#include "as2_state_estimator.hpp"
-
-int main(int argc, char ** argv)
-{
-  rclcpp::init(argc, argv);
-  auto node = std::make_shared<as2_state_estimator::StateEstimator>();
-  as2::spinLoop(node);
-  rclcpp::shutdown();
-  return 0;
-}
+#include "ground_truth_odometry_fuse.hpp"
+#include <pluginlib/class_list_macros.hpp>
+PLUGINLIB_EXPORT_CLASS(
+  ground_truth_odometry_fuse::Plugin,
+  as2_state_estimator_plugin_base::StateEstimatorBase)
