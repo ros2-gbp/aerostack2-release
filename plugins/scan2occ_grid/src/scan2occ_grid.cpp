@@ -27,17 +27,17 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 /*!******************************************************************************
- *  \file       mapping_2d.cpp
+ *  \file       scan2occ_grid.cpp
  *  \brief      2d mapping plugin.
  *  \authors    Pedro Arias Pérez
  ********************************************************************************/
 
-#include "mapping_2d.hpp"
+#include "scan2occ_grid.hpp"
 
 #include <tf2/convert.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-void mapping_2d::Plugin::on_setup()
+void scan2occ_grid::Plugin::on_setup()
 {
   RCLCPP_INFO(node_ptr_->get_logger(), "2D Mapping plugin setup");
 
@@ -45,6 +45,10 @@ void mapping_2d::Plugin::on_setup()
   scan_range_max_ = node_ptr_->get_parameter("scan_range_max").as_double();
   node_ptr_->declare_parameter("map_resolution", 0.0);
   map_resolution_ = node_ptr_->get_parameter("map_resolution").as_double();
+  node_ptr_->declare_parameter("hit_confidence", 40);
+  hit_confidence_ = node_ptr_->get_parameter("hit_confidence").as_int();
+  node_ptr_->declare_parameter("miss_confidence", 10);
+  miss_confidence_ = node_ptr_->get_parameter("miss_confidence").as_int();
   // TODO(parias): Check if map_width and map_height units, meters or cell?
   node_ptr_->declare_parameter("map_width", 0);
   map_width_ = node_ptr_->get_parameter("map_width").as_int();
@@ -60,7 +64,7 @@ void mapping_2d::Plugin::on_setup()
     "sensor_measurements/lidar/scan",
     as2_names::topics::sensor_measurements::qos,
     std::bind(
-      &mapping_2d::Plugin::on_laser_scan, this,
+      &scan2occ_grid::Plugin::on_laser_scan, this,
       std::placeholders::_1));
 
   map_pub_ = node_ptr_->create_publisher<nav_msgs::msg::OccupancyGrid>("map", 10);
@@ -80,7 +84,7 @@ void mapping_2d::Plugin::on_setup()
   occ_grid_->data.assign(map_width_ * map_height_, -1);  // unknown
 }
 
-void mapping_2d::Plugin::on_laser_scan(const sensor_msgs::msg::LaserScan::SharedPtr msg)
+void scan2occ_grid::Plugin::on_laser_scan(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
   nav_msgs::msg::OccupancyGrid::SharedPtr occupancy_grid_msg =
     std::make_shared<nav_msgs::msg::OccupancyGrid>();
@@ -116,6 +120,11 @@ void mapping_2d::Plugin::on_laser_scan(const sensor_msgs::msg::LaserScan::Shared
       msg->ranges[i] = msg->range_max;
     }
 
+    // check if range is nan
+    if (std::isnan(msg->ranges[i])) {
+      msg->ranges[i] = msg->range_max;
+    }
+
     // Clip range to parameter to clean noise
     if (msg->ranges[i] > scan_range_max_) {
       msg->ranges[i] = scan_range_max_;
@@ -137,7 +146,9 @@ void mapping_2d::Plugin::on_laser_scan(const sensor_msgs::msg::LaserScan::Shared
     }
 
     // Points between drone and laser hit are free
-    std::vector<std::vector<int>> middle_cells = get_middle_points(drone_cell, cell);
+    std::vector<std::vector<int>> middle_cells = bresenham_line(
+      drone_cell[0], drone_cell[1], cell[0], cell[1]);
+
     for (const std::vector<int> & p : middle_cells) {
       int cell_index = p[1] * occupancy_grid_msg->info.width + p[0];
       if (is_cell_index_valid(p)) {
@@ -156,7 +167,7 @@ void mapping_2d::Plugin::on_laser_scan(const sensor_msgs::msg::LaserScan::Shared
   publish_map(*occupancy_grid_msg);
 }
 
-void mapping_2d::Plugin::publish_map(const nav_msgs::msg::OccupancyGrid & map_update)
+void scan2occ_grid::Plugin::publish_map(const nav_msgs::msg::OccupancyGrid & map_update)
 {
   occ_grid_->header = map_update.header;
   occ_grid_->info = map_update.info;
@@ -169,44 +180,74 @@ void mapping_2d::Plugin::publish_map(const nav_msgs::msg::OccupancyGrid & map_up
 }
 
 // AUX METHODS
-std::vector<std::vector<int>> mapping_2d::Plugin::get_middle_points(
-  std::vector<int> p1,
-  std::vector<int> p2)
+std::vector<std::vector<int>> scan2occ_grid::Plugin::bresenham_line(
+  int x1, int y1, int x2, int y2)
 {
-  std::vector<std::vector<int>> middle_points;
-  int dx = p2[0] - p1[0];
-  int dy = p2[1] - p1[1];
-  int steps = std::max(std::abs(dx), std::abs(dy));
-  float xinc = dx / static_cast<float>(steps);
-  float yinc = dy / static_cast<float>(steps);
+  std::vector<std::vector<int>> points;
+  int dx = abs(x2 - x1);
+  int dy = abs(y2 - y1);
+  int sx = (x1 < x2) ? 1 : -1;
+  int sy = (y1 < y2) ? 1 : -1;
+  int err = dx - dy;
 
-  float x = p1[0];
-  float y = p1[1];
-
-  for (int i = 0; i < steps - 1; ++i) {
-    x += xinc;
-    y += yinc;
-    middle_points.push_back({static_cast<int>(std::round(x)), static_cast<int>(std::round(y))});
+  while (true) {
+    points.push_back({x1, y1});
+    if (x1 == x2 && y1 == y2) {
+      break;
+    }
+    int e2 = 2 * err;
+    if (e2 > -dy) {
+      err -= dy;
+      x1 += sx;
+    }
+    if (e2 < dx) {
+      err += dx;
+      y1 += sy;
+    }
   }
 
-  return middle_points;
+  return points;
 }
 
-bool mapping_2d::Plugin::is_cell_index_valid(std::vector<int> cell)
+// // Old method, replaced by bresenham_line
+// std::vector<std::vector<int>> scan2occ_grid::Plugin::get_middle_points(
+//   std::vector<int> p1,
+//   std::vector<int> p2)
+// {
+//   std::vector<std::vector<int>> middle_points;
+//   int dx = p2[0] - p1[0];
+//   int dy = p2[1] - p1[1];
+//   int steps = std::max(std::abs(dx), std::abs(dy));
+//   float xinc = dx / static_cast<float>(steps);
+//   float yinc = dy / static_cast<float>(steps);
+
+//   float x = p1[0];
+//   float y = p1[1];
+
+//   for (int i = 0; i < steps - 1; ++i) {
+//     x += xinc;
+//     y += yinc;
+//     middle_points.push_back({static_cast<int>(std::round(x)), static_cast<int>(std::round(y))});
+//   }
+
+//   return middle_points;
+// }
+
+bool scan2occ_grid::Plugin::is_cell_index_valid(std::vector<int> cell)
 {
   return cell[0] >= 0 && cell[0] < map_width_ && cell[1] >= 0 &&
          cell[1] < map_height_;
 }
 
-std::vector<int8_t> mapping_2d::Plugin::add_occ_grid_update(
+std::vector<int8_t> scan2occ_grid::Plugin::add_occ_grid_update(
   const std::vector<int8_t> & update, const std::vector<int8_t> & occ_grid_data)
 {
-  // TODO(parias): Parametrize weights for hit and miss. Also, threshold for keeping obstacles
+  // TODO(parias): Parametrize threshold for keeping obstacles
 
   // Values at occ_grid update are: 0 (free), 100 (occupied) or -1 (unknown)
   cv::Mat aux = cv::Mat(update).clone();
-  aux.setTo(-10, aux == 0);  // free with weight -> 10
-  aux.setTo(40, aux == 100);  // occupied with weight -> 40
+  aux.setTo(-miss_confidence_, aux == 0);  // free with weight -> 10
+  aux.setTo(hit_confidence_, aux == 100);  // occupied with weight -> 40
   aux.setTo(0, aux == -1);   // unknown with weight -> 0
 
   aux += cv::Mat(occ_grid_data);
@@ -219,7 +260,7 @@ std::vector<int8_t> mapping_2d::Plugin::add_occ_grid_update(
   return aux;
 }
 
-nav_msgs::msg::OccupancyGrid mapping_2d::Plugin::filter_occ_grid(
+nav_msgs::msg::OccupancyGrid scan2occ_grid::Plugin::filter_occ_grid(
   const nav_msgs::msg::OccupancyGrid & occ_grid)
 {
   // Filtering output map (Closing filter)
@@ -236,7 +277,7 @@ nav_msgs::msg::OccupancyGrid mapping_2d::Plugin::filter_occ_grid(
 }
 
 std::vector<int>
-mapping_2d::Plugin::point_to_cell(
+scan2occ_grid::Plugin::point_to_cell(
   geometry_msgs::msg::PointStamped point,
   nav_msgs::msg::MapMetaData map_info, std::string target_frame_id,
   std::shared_ptr<tf2_ros::Buffer> tf_buffer)
@@ -258,7 +299,7 @@ mapping_2d::Plugin::point_to_cell(
   return cell;
 }
 
-cv::Mat mapping_2d::Plugin::grid_to_img(
+cv::Mat scan2occ_grid::Plugin::grid_to_img(
   nav_msgs::msg::OccupancyGrid occ_grid,
   double thresh, bool unknown_as_free)
 {
@@ -282,7 +323,7 @@ cv::Mat mapping_2d::Plugin::grid_to_img(
   return mat_unsigned;
 }
 
-nav_msgs::msg::OccupancyGrid mapping_2d::Plugin::img_to_grid(
+nav_msgs::msg::OccupancyGrid scan2occ_grid::Plugin::img_to_grid(
   const cv::Mat img, const std_msgs::msg::Header & header,
   double grid_resolution)
 {
@@ -311,4 +352,4 @@ nav_msgs::msg::OccupancyGrid mapping_2d::Plugin::img_to_grid(
 }
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(mapping_2d::Plugin, as2_map_server_plugin_base::MapServerBase)
+PLUGINLIB_EXPORT_CLASS(scan2occ_grid::Plugin, as2_map_server_plugin_base::MapServerBase)
