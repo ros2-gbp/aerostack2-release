@@ -27,13 +27,13 @@
 // POSSIBILITY OF SUCH DAMAGE.
 
 /*!******************************************************************************
- *  \file       mapping_2d.hpp
+ *  \file       scan2occ_grid.hpp
  *  \brief      2d mapping plugin.
  *  \authors    Pedro Arias Pérez
  ********************************************************************************/
 
-#ifndef MAPPING_2D_HPP_
-#define MAPPING_2D_HPP_
+#ifndef SCAN2OCC_GRID_HPP_
+#define SCAN2OCC_GRID_HPP_
 
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
@@ -48,7 +48,7 @@
 #include <opencv2/core/types.hpp>
 #include <opencv2/opencv.hpp>
 
-namespace mapping_2d
+namespace scan2occ_grid
 {
 
 class Plugin : public as2_map_server_plugin_base::MapServerBase
@@ -62,6 +62,8 @@ public:
 private:
   double scan_range_max_;  // [m]
   double map_resolution_;  // [m/cell]
+  int hit_confidence_;  // [0-100]
+  int miss_confidence_;  // [0-100]
   int map_width_;  // [cells]
   int map_height_;  // [cells]
 
@@ -82,9 +84,8 @@ private:
   void publish_map(const nav_msgs::msg::OccupancyGrid & map_update);
 
   // AUX METHODS
-  std::vector<std::vector<int>> get_middle_points(
-    std::vector<int> p1,
-    std::vector<int> p2);
+  std::vector<std::vector<int>> bresenham_line(int x0, int y0, int x1, int y1);
+  // std::vector<std::vector<int>> get_middle_points(std::vector<int> p1, std::vector<int> p2);
   bool is_cell_index_valid(std::vector<int> cell);
 
   std::vector<int8_t> add_occ_grid_update(
@@ -121,6 +122,6 @@ private:
     double grid_resolution);
 };
 
-}  // namespace mapping_2d
+}  // namespace scan2occ_grid
 
-#endif  // MAPPING_2D_HPP_
+#endif  // SCAN2OCC_GRID_HPP_
